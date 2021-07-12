@@ -8,17 +8,17 @@ class Person {
   String? profilePhoto;
 
   Person({
-    required this.uid,
-    required this.name,
-    required this.email,
-    required this.username,
-    required this.status,
-    required this.state,
-    required this.profilePhoto,
+    this.uid,
+    this.name,
+    this.email,
+    this.username,
+    this.status,
+    this.state,
+    this.profilePhoto,
   });
 
-  static Map toMap(Person user) {
-    var data = Map<String, dynamic>();
+  Map<String, dynamic> toMap(Person user) {
+    Map<String, dynamic> data = {};
     data["uid"] = user.uid;
     data["name"] = user.name;
     data["email"] = user.email;
