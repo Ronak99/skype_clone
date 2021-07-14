@@ -35,7 +35,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
         title: UserCircle(text: initials),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, "/search_screen");
+            },
             icon: Icon(Icons.search),
             color: Colors.white,
           ),
@@ -45,7 +47,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             color: Colors.white,
           ),
         ],
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.notifications),),
         centertitle: true);
   }
 
@@ -101,7 +103,7 @@ class _ChatListContainerState extends State<ChatListContainer> {
                           shape: BoxShape.circle,
                           color: UniversalVariables.onlinDotColor,
                           border: Border.all(
-                              color: UniversalVariables.blackColor, width: 2)),
+                              color: UniversalVariables.blackColor, width: 2),),
                     ),
                   )
                 ],
@@ -160,7 +162,7 @@ class UserCircle extends StatelessWidget {
               ),
             )
           ],
-        ));
+        ),);
   }
 }
 
@@ -172,7 +174,7 @@ class NewChatButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           gradient: UniversalVariables.fabGradient,
-          borderRadius: BorderRadius.circular(50)),
+          borderRadius: BorderRadius.circular(50),),
       child: Icon(
         Icons.edit,
         color: Colors.white,

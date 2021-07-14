@@ -48,12 +48,29 @@ class FirebaseMethods {
         username: username,
         profilePhoto: userCred.user?.photoURL);
 
-    firestore.collection("users").doc(userCred.user?.uid).set(user.toMap(user),);
+    firestore.collection("users").doc(userCred.user?.uid).set(
+          user.toMap(user),
+        );
   }
 
   Future<void> signOut() async {
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
     return await _auth.signOut();
+  }
+
+  Future<List<Person>> fetchAllUsers(User currentUser) async {
+    List<Person> userList = [];
+
+    QuerySnapshot querysnapshot = await firestore.collection("users").get();
+
+    for (var i = 0; i < querysnapshot.docs.length; i++) {
+      if (querysnapshot.docs[i].id != currentUser.uid) {
+        userList.add(Person.fromMap(
+            querysnapshot.docs[i].data() as Map<String, dynamic>),);
+      }
+    }
+
+    return userList;
   }
 }
