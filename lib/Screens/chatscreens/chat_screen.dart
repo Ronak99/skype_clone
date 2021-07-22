@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:skype_clone/models/message.dart';
 import 'package:skype_clone/models/person.dart';
+import 'package:skype_clone/resources/firebase_methods.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
 import 'package:skype_clone/widgets/appbar.dart';
 import 'package:skype_clone/widgets/custom_tile.dart';
@@ -15,7 +18,26 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textfeildController = TextEditingController();
 
+  FirebaseMethods _firebaseMethods = FirebaseMethods();
+
+  Person _senderUser = Person();
+
+  String _currentUserId = "";
+
+  @override
+  void initState() {
+    _firebaseMethods.getCurrentUser().then((user) {
+      setState(() {
+        _currentUserId = user.uid;
+        _senderUser = Person(
+            uid: user.uid, name: user.displayName, profilePhoto: user.photoURL);
+      });
+    });
+    super.initState();
+  }
+
   bool iswriting = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,72 +50,65 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget messageList() {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        return chatMessageItem();
-      },
-      itemCount: 6,
-      padding: EdgeInsets.all(6),
-    );
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("messages")
+            .doc(_currentUserId)
+            .collection(widget.receiver.uid.toString())
+            .orderBy("timestamp", descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return chatMessageItem(snapshot.data!.docs[index]);
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 
-  Widget chatMessageItem() {
+  Widget chatMessageItem(DocumentSnapshot snapshot) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
-      child: Container(
-        child: receiverLayout(),
-      ),
+      child: Container(child: messageLayout(snapshot)),
     );
   }
 
-  Widget senderLayout() {
+  Widget messageLayout(DocumentSnapshot snapshot) {
     Radius messageRadius = Radius.circular(10);
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: snapshot["senderId"] == _currentUserId
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.45,
-        ),
         margin: EdgeInsets.only(top: 6),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.65,
+        ),
         decoration: BoxDecoration(
           color: UniversalVariables.senderColor,
-          borderRadius: BorderRadius.only(
-              topLeft: messageRadius,
-              topRight: messageRadius,
-              bottomLeft: messageRadius),
+          borderRadius: snapshot["senderId"] == _currentUserId
+              ? BorderRadius.only(
+                  topLeft: messageRadius,
+                  topRight: messageRadius,
+                  bottomLeft: messageRadius)
+              : BorderRadius.only(
+                  bottomRight: messageRadius,
+                  topRight: messageRadius,
+                  bottomLeft: messageRadius),
         ),
         child: Padding(
             padding: EdgeInsets.all(10),
             child: Text(
-              "Hello",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              snapshot["message"],
+              style: TextStyle(color: Colors.white, fontSize: 16),
             )),
       ),
-    );
-  }
-
-  Widget receiverLayout() {
-    Radius messageRadius = Radius.circular(10);
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-          margin: EdgeInsets.only(top: 12),
-          constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.65),
-          decoration: BoxDecoration(
-            color: UniversalVariables.receiverColor,
-            borderRadius: BorderRadius.only(
-                bottomRight: messageRadius,
-                topRight: messageRadius,
-                bottomLeft: messageRadius),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "Hello",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          )),
     );
   }
 
@@ -237,8 +252,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   sendMessage() {
-    var text = textfeildController.text;
-    
+    Message _message = Message(
+        senderId: _senderUser.uid,
+        receiverId: widget.receiver.uid!,
+        type: "text",
+        message: textfeildController.text,
+        timestamp: FieldValue.serverTimestamp());
+
+    setState(() {
+      iswriting = false;
+    });
+
+    _firebaseMethods.addMessageToDb(_message);
   }
 
   CustomAppBar customAppBar(BuildContext context) {

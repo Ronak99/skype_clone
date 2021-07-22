@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:skype_clone/models/message.dart';
 
 import '../models/person.dart';
 import '../utils/utilities.dart';
@@ -66,11 +67,28 @@ class FirebaseMethods {
 
     for (var i = 0; i < querysnapshot.docs.length; i++) {
       if (querysnapshot.docs[i].id != currentUser.uid) {
-        userList.add(Person.fromMap(
-            querysnapshot.docs[i].data() as Map<String, dynamic>),);
+        userList.add(
+          Person.fromMap(querysnapshot.docs[i].data() as Map<String, dynamic>),
+        );
       }
     }
 
     return userList;
+  }
+
+  Future<void> addMessageToDb(Message message) async {
+    var msg = message.toMap();
+
+    await firestore
+        .collection("messages")
+        .doc(message.senderId)
+        .collection(message.receiverId.toString())
+        .add(msg);
+
+    await firestore
+        .collection("messages")
+        .doc(message.receiverId)
+        .collection(message.senderId.toString())
+        .add(msg);
   }
 }
