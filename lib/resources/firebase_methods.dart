@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:skype_clone/constants/strings.dart';
 import 'package:skype_clone/models/message.dart';
 
 import '../models/person.dart';
@@ -10,7 +15,7 @@ class FirebaseMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn();
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+  FirebaseStorage _storageReference = FirebaseStorage.instance;
   Person user = Person();
 
   Future<User> getCurrentUser() async {
@@ -30,8 +35,8 @@ class FirebaseMethods {
 
   Future<bool> authenticateUser(UserCredential userCredential) async {
     QuerySnapshot result = await firestore
-        .collection("users")
-        .where("email", isEqualTo: userCredential.user?.email)
+        .collection(USERS_COLLECTION)
+        .where(EMAIL_FIELD, isEqualTo: userCredential.user?.email)
         .get();
 
     final List<DocumentSnapshot> docs = result.docs;
@@ -49,7 +54,7 @@ class FirebaseMethods {
         username: username,
         profilePhoto: userCred.user?.photoURL);
 
-    firestore.collection("users").doc(userCred.user?.uid).set(
+    firestore.collection(USERS_COLLECTION).doc(userCred.user?.uid).set(
           user.toMap(user),
         );
   }
@@ -63,7 +68,8 @@ class FirebaseMethods {
   Future<List<Person>> fetchAllUsers(User currentUser) async {
     List<Person> userList = [];
 
-    QuerySnapshot querysnapshot = await firestore.collection("users").get();
+    QuerySnapshot querysnapshot =
+        await firestore.collection(USERS_COLLECTION).get();
 
     for (var i = 0; i < querysnapshot.docs.length; i++) {
       if (querysnapshot.docs[i].id != currentUser.uid) {
@@ -80,15 +86,46 @@ class FirebaseMethods {
     var msg = message.toMap();
 
     await firestore
-        .collection("messages")
+        .collection(MESSAGE_COLLECTION)
         .doc(message.senderId)
         .collection(message.receiverId.toString())
         .add(msg);
 
     await firestore
-        .collection("messages")
+        .collection(MESSAGE_COLLECTION)
         .doc(message.receiverId)
         .collection(message.senderId.toString())
         .add(msg);
+  }
+
+  Future<String> uploadImageToStorage(File image) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    String url = "";
+    Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+    UploadTask uploadTask = ref.putFile(image);
+    uploadTask.whenComplete(() {
+      ref.getDownloadURL().then((value) {
+        url = value;
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
+    return url;
+  }
+
+  void uploadImage(File image, String receiverId, String senderId) async {
+    String url = await uploadImageToStorage(image);
+
+    Message message = Message.imageMessage(
+        senderId: senderId,
+        receiverId: receiverId,
+        message: "IMAGE",
+        type: "IMAGE",
+        timestamp: Timestamp.now(),
+        photoUrl: url);
+
+    var msg = message.toImageMap();
+
+    addMessageToDb(message);
   }
 }

@@ -5,7 +5,7 @@ class Message {
   String? receiverId;
   String? type;
   String? message;
-  FieldValue timestamp;
+  Timestamp timestamp = Timestamp.now();
   String? photoUrl = "";
 
   Message(
@@ -33,13 +33,22 @@ class Message {
     return map;
   }
 
-  Message fromMap(Map<String, dynamic> map) {
-    Message _message = Message(
-        message: map["message"],
-        senderId: map["senderId"],
-        receiverId: map["receiverId"],
-        type: map["type"],
-        timestamp: map["timestamp"]);
-    return _message;
+  Message.fromMap(Map<String, dynamic> map) {
+    this.message = map["message"];
+    this.senderId = map["senderId"];
+    this.receiverId = map["receiverId"];
+    this.type = map["type"];
+    this.timestamp = map["timestamp"];
+  }
+
+  Map<String, dynamic> toImageMap() {
+    Map<String, dynamic> map = {};
+    map["senderId"] = this.senderId;
+    map["receiverId"] = this.receiverId;
+    map["type"] = this.type;
+    map["message"] = this.message;
+    map["timestamp"] = this.timestamp;
+    map["photoUrl"] = this.photoUrl;
+    return map;
   }
 }

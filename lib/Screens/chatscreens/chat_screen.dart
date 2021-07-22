@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:skype_clone/constants/strings.dart';
 import 'package:skype_clone/models/message.dart';
 import 'package:skype_clone/models/person.dart';
 import 'package:skype_clone/resources/firebase_methods.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
+import 'package:skype_clone/utils/utilities.dart';
 import 'package:skype_clone/widgets/appbar.dart';
 import 'package:skype_clone/widgets/custom_tile.dart';
 
@@ -17,12 +22,11 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textfeildController = TextEditingController();
-
   FirebaseMethods _firebaseMethods = FirebaseMethods();
-
   Person _senderUser = Person();
-
   String _currentUserId = "";
+  bool iswriting = false;
+  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -36,7 +40,25 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
-  bool iswriting = false;
+  sendMessage() {
+    Message _message = Message(
+        senderId: _senderUser.uid,
+        receiverId: widget.receiver.uid!,
+        type: "text",
+        message: textfeildController.text,
+        timestamp: Timestamp.now());
+    setState(() {
+      iswriting = false;
+    });
+    textfeildController.text = "";
+    _firebaseMethods.addMessageToDb(_message);
+  }
+
+  pickImage({required ImageSource source}) async {
+    File selectedImage = await Utils.pickImage(source: source);
+    _firebaseMethods.uploadImage(
+        selectedImage, widget.receiver.uid!, _currentUserId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +74,15 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget messageList() {
     return StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection("messages")
+            .collection(MESSAGE_COLLECTION)
             .doc(_currentUserId)
             .collection(widget.receiver.uid.toString())
-            .orderBy("timestamp", descending: true)
+            .orderBy(TIMESTAMP_FIELD, descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
               itemBuilder: (BuildContext context, int index) {
                 return chatMessageItem(snapshot.data!.docs[index]);
               },
@@ -73,16 +96,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget chatMessageItem(DocumentSnapshot snapshot) {
+    Message _msg = Message.fromMap(snapshot.data() as Map<String, dynamic>);
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
-      child: Container(child: messageLayout(snapshot)),
+      child: Container(child: messageLayout(_msg)),
     );
   }
 
-  Widget messageLayout(DocumentSnapshot snapshot) {
+  Widget messageLayout(Message msg) {
     Radius messageRadius = Radius.circular(10);
     return Align(
-      alignment: snapshot["senderId"] == _currentUserId
+      alignment: msg.senderId == _currentUserId
           ? Alignment.centerRight
           : Alignment.centerLeft,
       child: Container(
@@ -92,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         decoration: BoxDecoration(
           color: UniversalVariables.senderColor,
-          borderRadius: snapshot["senderId"] == _currentUserId
+          borderRadius: msg.senderId == _currentUserId
               ? BorderRadius.only(
                   topLeft: messageRadius,
                   topRight: messageRadius,
@@ -105,7 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Padding(
             padding: EdgeInsets.all(10),
             child: Text(
-              snapshot["message"],
+              msg.message!,
               style: TextStyle(color: Colors.white, fontSize: 16),
             )),
       ),
@@ -228,7 +252,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Icon(Icons.record_voice_over),
                 ),
-          iswriting ? Container() : Icon(Icons.camera_alt),
+          iswriting
+              ? Container()
+              : GestureDetector(
+                  child: Icon(Icons.camera_alt),
+                  onTap: () => pickImage(source: ImageSource.camera),
+                ),
           iswriting
               ? Container(
                   margin: EdgeInsets.only(left: 10),
@@ -249,21 +278,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
-  }
-
-  sendMessage() {
-    Message _message = Message(
-        senderId: _senderUser.uid,
-        receiverId: widget.receiver.uid!,
-        type: "text",
-        message: textfeildController.text,
-        timestamp: FieldValue.serverTimestamp());
-
-    setState(() {
-      iswriting = false;
-    });
-
-    _firebaseMethods.addMessageToDb(_message);
   }
 
   CustomAppBar customAppBar(BuildContext context) {
