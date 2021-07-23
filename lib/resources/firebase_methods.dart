@@ -126,6 +126,16 @@ class FirebaseMethods {
 
     var msg = message.toImageMap();
 
-    addMessageToDb(message);
+    await firestore
+        .collection(MESSAGE_COLLECTION)
+        .doc(message.senderId)
+        .collection(message.receiverId.toString())
+        .add(msg);
+
+    await firestore
+        .collection(MESSAGE_COLLECTION)
+        .doc(message.receiverId)
+        .collection(message.senderId.toString())
+        .add(msg);
   }
 }
