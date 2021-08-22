@@ -43,10 +43,6 @@
     <a href="https://github.com/Rohit19060/skype_clone/issues/new/choose" title="🐛Report Bug/🎊Request Feature">🚀 Got Issue</a>
 </p>
 
-## 🚀 Features
-
-## 🦋 Prerequisite
-
 ## 🛠️ Installation Steps
 
 1. Clone the repository
