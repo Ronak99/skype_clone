@@ -19,8 +19,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(10),
+      decoration: const BoxDecoration(
         color: UniversalVariables.blackColor,
         border: Border(
           bottom: BorderSide(
@@ -41,5 +41,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  @override
   final Size preferredSize = const Size.fromHeight(kToolbarHeight + 10);
 }

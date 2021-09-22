@@ -36,6 +36,7 @@ dependencies:
   permission_handler: ^8.1.2
   provider: ^5.0.0
   shimmer: ^2.0.0
+  flutter_lints: ^1.0.4
 
 dev_dependencies:
   flutter_test:

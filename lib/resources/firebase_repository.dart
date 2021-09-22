@@ -4,7 +4,7 @@ import 'package:skype_clone/models/person.dart';
 import 'firebase_methods.dart';
 
 class FirebaseRepository {
-  FirebaseMethods _firebasemethods = FirebaseMethods();
+  final FirebaseMethods _firebasemethods = FirebaseMethods();
 
   Future<User> getCurrentUser() => _firebasemethods.getCurrentUser();
 

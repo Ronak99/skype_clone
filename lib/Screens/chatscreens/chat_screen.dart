@@ -22,11 +22,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textfeildController = TextEditingController();
-  FirebaseMethods _firebaseMethods = FirebaseMethods();
+  final FirebaseMethods _firebaseMethods = FirebaseMethods();
   Person _senderUser = Person();
   String _currentUserId = "";
   bool iswriting = false;
-  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -74,10 +73,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget messageList() {
     return StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection(MESSAGE_COLLECTION)
+            .collection(messageCollection)
             .doc(_currentUserId)
             .collection(widget.receiver.uid.toString())
-            .orderBy(TIMESTAMP_FIELD, descending: true)
+            .orderBy(timestampField, descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
@@ -88,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             );
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -98,19 +97,19 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget chatMessageItem(DocumentSnapshot snapshot) {
     Message _msg = Message.fromMap(snapshot.data() as Map<String, dynamic>);
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
+      margin: const EdgeInsets.symmetric(vertical: 15),
       child: Container(child: messageLayout(_msg)),
     );
   }
 
   Widget messageLayout(Message msg) {
-    Radius messageRadius = Radius.circular(10);
+    Radius messageRadius = const Radius.circular(10);
     return Align(
       alignment: msg.senderId == _currentUserId
           ? Alignment.centerRight
           : Alignment.centerLeft,
       child: Container(
-        margin: EdgeInsets.only(top: 6),
+        margin: const EdgeInsets.only(top: 6),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.65,
         ),
@@ -127,10 +126,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   bottomLeft: messageRadius),
         ),
         child: Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Text(
               msg.message!,
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             )),
       ),
     );
@@ -150,13 +149,13 @@ class _ChatScreenState extends State<ChatScreen> {
             return Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
                     children: [
                       TextButton(
                           onPressed: () => Navigator.maybePop(context),
-                          child: Icon(Icons.close)),
-                      Expanded(
+                          child: const Icon(Icons.close)),
+                      const Expanded(
                           child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -172,7 +171,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Flexible(
                     child: ListView(
-                  children: [
+                  children: const [
                     ModalTile(
                         title: "Media",
                         subtitle: "Share Photos and Video",
@@ -205,67 +204,67 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => _addMediaModel(context),
             child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(5),
+              decoration: const BoxDecoration(
                 gradient: UniversalVariables.fabGradient,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
             ),
           ),
-          SizedBox(
-            width: 5,
+          const SizedBox(
+            width: 5,  
           ),
           Expanded(
             child: TextField(
                 controller: textfeildController,
-                onChanged: (val) => val.length > 0 && val.trim() != ""
+                onChanged: (val) => val.isNotEmpty && val.trim() != ""
                     ? setWritingTo(true)
                     : setWritingTo(false),
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                     hintText: "Type a message",
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: UniversalVariables.greyColor,
                     ),
-                    border: OutlineInputBorder(
+                    border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(50)),
                         borderSide: BorderSide.none),
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                     filled: true,
                     fillColor: UniversalVariables.separatorColor,
                     suffixIcon: GestureDetector(
                       onTap: () {},
-                      child: Icon(Icons.face),
+                      child: const Icon(Icons.face),
                     ))),
           ),
           iswriting
               ? Container()
-              : Padding(
+              : const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Icon(Icons.record_voice_over),
                 ),
           iswriting
               ? Container()
               : GestureDetector(
-                  child: Icon(Icons.camera_alt),
+                  child: const Icon(Icons.camera_alt),
                   onTap: () => pickImage(source: ImageSource.camera),
                 ),
           iswriting
               ? Container(
-                  margin: EdgeInsets.only(left: 10),
-                  decoration: BoxDecoration(
+                  margin: const EdgeInsets.only(left: 10),
+                  decoration: const BoxDecoration(
                       gradient: UniversalVariables.fabGradient,
                       shape: BoxShape.circle),
                   child: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.send,
                       size: 15,
                     ),
@@ -283,13 +282,13 @@ class _ChatScreenState extends State<ChatScreen> {
   CustomAppBar customAppBar(BuildContext context) {
     return CustomAppBar(
       leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context)),
       centertitle: true,
       title: Text(widget.receiver.name ?? ""),
       actions: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.video_call)),
-        IconButton(onPressed: () {}, icon: Icon(Icons.phone)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.phone)),
       ],
     );
   }
@@ -310,21 +309,21 @@ class ModalTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: CustomTile(
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
         ),
         mini: false,
         leading: Container(
-          margin: EdgeInsets.only(right: 10),
+          margin: const EdgeInsets.only(right: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             color: UniversalVariables.receiverColor,
           ),
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Icon(
             icon,
             color: UniversalVariables.greyColor,
@@ -333,7 +332,7 @@ class ModalTile extends StatelessWidget {
         ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(color: UniversalVariables.greyColor),
+          style: const TextStyle(color: UniversalVariables.greyColor),
         ),
       ),
     );

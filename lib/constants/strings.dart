@@ -1,5 +1,5 @@
-const String MESSAGE_COLLECTION = "messages";
-const String USERS_COLLECTION = "users";
+const String messageCollection = "messages";
+const String usersCollection = "users";
 
-const String TIMESTAMP_FIELD = "timestamp";
-const String EMAIL_FIELD = "email";
+const String timestampField = "timestamp";
+const String emailField = "email";

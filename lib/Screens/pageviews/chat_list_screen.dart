@@ -38,16 +38,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
             onPressed: () {
               Navigator.pushNamed(context, "/search_screen");
             },
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             color: Colors.white,
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             color: Colors.white,
           ),
         ],
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.notifications),),
+        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.notifications),),
         centertitle: true);
   }
 
@@ -56,8 +56,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       appBar: customAppBar(context),
-      floatingActionButton: NewChatButton(),
-      body: ChatListContainer(
+      floatingActionButton: const NewChatButton(),
+      body: const ChatListContainer(
         currentUserId: "uid",
       ),
     );
@@ -76,51 +76,49 @@ class ChatListContainer extends StatefulWidget {
 class _ChatListContainerState extends State<ChatListContainer> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        padding: EdgeInsets.all(10),
-        itemCount: 2,
-        itemBuilder: (context, index) {
-          return CustomTile(
-            mini: false,
-            onTap: () {},
-            leading: Container(
-              constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    maxRadius: 30,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage(
-                        "https://avatars.githubusercontent.com/u/39453065?v=4"),
+    return ListView.builder(
+      padding: const EdgeInsets.all(10),
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return CustomTile(
+          mini: false,
+          onTap: () {},
+          leading: Container(
+            constraints: const BoxConstraints(maxHeight: 60, maxWidth: 60),
+            child: Stack(
+              children: [
+                const CircleAvatar(
+                  maxRadius: 30,
+                  backgroundColor: Colors.grey,
+                  backgroundImage: NetworkImage(
+                      "https://avatars.githubusercontent.com/u/39453065?v=4"),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    height: 20,
+                    width: 20,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: UniversalVariables.onlinDotColor,
+                        border: Border.all(
+                            color: UniversalVariables.blackColor, width: 2),),
                   ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: UniversalVariables.onlinDotColor,
-                          border: Border.all(
-                              color: UniversalVariables.blackColor, width: 2),),
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-            subtitle: Text(
-              "hello",
-              style: TextStyle(color: UniversalVariables.greyColor),
-            ),
-            title: Text(
-              "Rohit Jain",
-              style: TextStyle(
-                  color: Colors.white, fontFamily: "Arial", fontSize: 19),
-            ),
-          );
-        },
-      ),
+          ),
+          subtitle: const Text(
+            "hello",
+            style: TextStyle(color: UniversalVariables.greyColor),
+          ),
+          title: const Text(
+            "Rohit Jain",
+            style: TextStyle(
+                color: Colors.white, fontFamily: "Arial", fontSize: 19),
+          ),
+        );
+      },
     );
   }
 }
@@ -143,7 +141,7 @@ class UserCircle extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 text,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: UniversalVariables.lightBlueColor,
                     fontSize: 13),
@@ -175,12 +173,12 @@ class NewChatButton extends StatelessWidget {
       decoration: BoxDecoration(
           gradient: UniversalVariables.fabGradient,
           borderRadius: BorderRadius.circular(50),),
-      child: Icon(
+      child: const Icon(
         Icons.edit,
         color: Colors.white,
         size: 25,
       ),
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
     );
   }
 }

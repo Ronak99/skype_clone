@@ -25,30 +25,30 @@ class Message {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    map["senderId"] = this.senderId;
-    map["receiverId"] = this.receiverId;
-    map["type"] = this.type;
-    map["message"] = this.message;
-    map["timestamp"] = this.timestamp;
+    map["senderId"] = senderId;
+    map["receiverId"] = receiverId;
+    map["type"] = type;
+    map["message"] = message;
+    map["timestamp"] = timestamp;
     return map;
   }
 
   Message.fromMap(Map<String, dynamic> map) {
-    this.message = map["message"];
-    this.senderId = map["senderId"];
-    this.receiverId = map["receiverId"];
-    this.type = map["type"];
-    this.timestamp = map["timestamp"];
+    message = map["message"];
+    senderId = map["senderId"];
+    receiverId = map["receiverId"];
+    type = map["type"];
+    timestamp = map["timestamp"];
   }
 
   Map<String, dynamic> toImageMap() {
     Map<String, dynamic> map = {};
-    map["senderId"] = this.senderId;
-    map["receiverId"] = this.receiverId;
-    map["type"] = this.type;
-    map["message"] = this.message;
-    map["timestamp"] = this.timestamp;
-    map["photoUrl"] = this.photoUrl;
+    map["senderId"] = senderId;
+    map["receiverId"] = receiverId;
+    map["type"] = type;
+    map["message"] = message;
+    map["timestamp"] = timestamp;
+    map["photoUrl"] = photoUrl;
     return map;
   }
 }

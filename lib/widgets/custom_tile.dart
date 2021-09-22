@@ -42,7 +42,7 @@ class CustomTile extends StatelessWidget {
               child: Container(
                 margin: EdgeInsets.only(left: mini ? 10 : 15),
                 padding: EdgeInsets.symmetric(vertical: mini ? 3 : 20),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
                         width: 1, color: UniversalVariables.separatorColor),
@@ -55,7 +55,7 @@ class CustomTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         title,
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Row(

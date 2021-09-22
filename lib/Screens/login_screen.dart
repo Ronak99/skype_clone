@@ -15,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  FirebaseRepository _repository = FirebaseRepository();
+  final FirebaseRepository _repository = FirebaseRepository();
 
   bool isLoginPressed = false;
   @override
@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: loginButton(),
         ),
         isLoginPressed
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Container(),
       ])),
     );
@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           onPressed: performLogin,
-          child: Text(
+          child: const Text(
             "LOGIN",
             style: TextStyle(
                 fontSize: 35, fontWeight: FontWeight.w900, letterSpacing: 1.2),
@@ -79,17 +79,15 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) {
-              return HomeScreen();
+              return const HomeScreen();
             }),
           );
         });
-        print(true);
       } else {
-        print(false);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) {
-            return HomeScreen();
+            return const HomeScreen();
           }),
         );
       }

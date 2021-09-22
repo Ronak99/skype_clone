@@ -15,7 +15,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  FirebaseRepository _repository = FirebaseRepository();
+  final FirebaseRepository _repository = FirebaseRepository();
 
   List<Person> userList = [];
 
@@ -36,13 +36,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
   searchAppBar(BuildContext context) {
     return NewGradientAppBar(
-      gradient: LinearGradient(colors: [
+      gradient: const LinearGradient(colors: [
         UniversalVariables.gradientColorStart,
         UniversalVariables.gradientColorEnd
       ]),
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back,
           color: Colors.white,
         ),
@@ -51,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight + 20),
         child: Padding(
-          padding: EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.only(left: 20),
           child: TextField(
             controller: searchController,
             onChanged: (val) {
@@ -61,21 +61,21 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             cursorColor: UniversalVariables.blackColor,
             autofocus: true,
-            style: TextStyle(
+            style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.white, fontSize: 35),
             decoration: InputDecoration(
                 suffixIcon: IconButton(
                   onPressed: () {
                     searchController.clear();
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.close,
                     color: Colors.white,
                   ),
                 ),
                 border: InputBorder.none,
                 hintText: "Search",
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 35,
                     color: Colors.white)),
@@ -86,7 +86,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   buildSuggestions(String query) {
-    print(query);
     final List<Person> suggestionList = query.isEmpty
         ? []
         : userList.where((Person user) {
@@ -95,7 +94,6 @@ class _SearchScreenState extends State<SearchScreen> {
             String _getName = user.name!.toLowerCase();
             bool matchesusername = _getUsername.contains(_query);
             bool matchesName = _getName.contains(_query);
-            print(matchesusername || matchesName);
             return (matchesusername || matchesName);
           }).toList();
     return ListView.builder(
@@ -123,11 +121,12 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           title: Text(
             searchedUser.username!,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             searchedUser.name!,
-            style: TextStyle(color: UniversalVariables.greyColor),
+            style: const TextStyle(color: UniversalVariables.greyColor),
           ),
         );
       }),
@@ -136,12 +135,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(searchController.text);
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       appBar: searchAppBar(context),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: buildSuggestions(query),
       ),
     );

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:skype_clone/constants/strings.dart';
 import 'package:skype_clone/models/message.dart';
 
@@ -13,9 +13,8 @@ import '../utils/utilities.dart';
 
 class FirebaseMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  FirebaseStorage _storageReference = FirebaseStorage.instance;
   Person user = Person();
 
   Future<User> getCurrentUser() async {
@@ -35,18 +34,17 @@ class FirebaseMethods {
 
   Future<bool> authenticateUser(UserCredential userCredential) async {
     QuerySnapshot result = await firestore
-        .collection(USERS_COLLECTION)
-        .where(EMAIL_FIELD, isEqualTo: userCredential.user?.email)
+        .collection(usersCollection)
+        .where(emailField, isEqualTo: userCredential.user?.email)
         .get();
 
     final List<DocumentSnapshot> docs = result.docs;
     // If user is registred then legth of list > 0 or else less than 0
-    return docs.length == 0 ? true : false;
+    return docs.isEmpty ? true : false;
   }
 
   Future<void> addDataToDb(UserCredential userCred) async {
     String username = Utils.getUsername(userCred.user?.email);
-    print(userCred.user);
     Person user = Person(
         uid: userCred.user?.uid,
         name: userCred.user?.displayName,
@@ -54,7 +52,7 @@ class FirebaseMethods {
         username: username,
         profilePhoto: userCred.user?.photoURL);
 
-    firestore.collection(USERS_COLLECTION).doc(userCred.user?.uid).set(
+    firestore.collection(usersCollection).doc(userCred.user?.uid).set(
           user.toMap(user),
         );
   }
@@ -69,7 +67,7 @@ class FirebaseMethods {
     List<Person> userList = [];
 
     QuerySnapshot querysnapshot =
-        await firestore.collection(USERS_COLLECTION).get();
+        await firestore.collection(usersCollection).get();
 
     for (var i = 0; i < querysnapshot.docs.length; i++) {
       if (querysnapshot.docs[i].id != currentUser.uid) {
@@ -86,13 +84,13 @@ class FirebaseMethods {
     var msg = message.toMap();
 
     await firestore
-        .collection(MESSAGE_COLLECTION)
+        .collection(messageCollection)
         .doc(message.senderId)
         .collection(message.receiverId.toString())
         .add(msg);
 
     await firestore
-        .collection(MESSAGE_COLLECTION)
+        .collection(messageCollection)
         .doc(message.receiverId)
         .collection(message.senderId.toString())
         .add(msg);
@@ -108,7 +106,7 @@ class FirebaseMethods {
         url = value;
       });
     }).catchError((onError) {
-      print(onError);
+      debugPrint(onError);
     });
     return url;
   }
@@ -127,13 +125,13 @@ class FirebaseMethods {
     var msg = message.toImageMap();
 
     await firestore
-        .collection(MESSAGE_COLLECTION)
+        .collection(messageCollection)
         .doc(message.senderId)
         .collection(message.receiverId.toString())
         .add(msg);
 
     await firestore
-        .collection(MESSAGE_COLLECTION)
+        .collection(messageCollection)
         .doc(message.receiverId)
         .collection(message.senderId.toString())
         .add(msg);

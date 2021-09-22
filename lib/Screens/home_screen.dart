@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'pageviews/chat_list_screen.dart';
 import '../utils/universal_variables.dart';
+import 'pageviews/chat_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget text(String tx) {
     return Text(
       tx,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
     );
   }
 
@@ -39,11 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       body: PageView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
-          Container(
-            child: ChatListScreen(),
-          ),
+          const ChatListScreen(),
           Center(
             child: text("Call Logs"),
           ),
@@ -54,43 +52,41 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: pageController,
         onPageChanged: onPageChanged,
       ),
-      bottomNavigationBar: Container(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: CupertinoTabBar(
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.chat,
-                  color: _page == 0
-                      ? UniversalVariables.lightBlueColor
-                      : UniversalVariables.greyColor,
-                ),
-                label: "Chats",
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: CupertinoTabBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.chat,
+                color: _page == 0
+                    ? UniversalVariables.lightBlueColor
+                    : UniversalVariables.greyColor,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.call,
-                  color: _page == 1
-                      ? UniversalVariables.lightBlueColor
-                      : UniversalVariables.greyColor,
-                ),
-                label: "Call",
+              label: "Chats",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.call,
+                color: _page == 1
+                    ? UniversalVariables.lightBlueColor
+                    : UniversalVariables.greyColor,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.contact_phone,
-                  color: _page == 2
-                      ? UniversalVariables.lightBlueColor
-                      : UniversalVariables.greyColor,
-                ),
-                label: "Contacts",
+              label: "Call",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.contact_phone,
+                color: _page == 2
+                    ? UniversalVariables.lightBlueColor
+                    : UniversalVariables.greyColor,
               ),
-            ],
-            backgroundColor: UniversalVariables.blackColor,
-            onTap: navigationTapped,
-            currentIndex: _page,
-          ),
+              label: "Contacts",
+            ),
+          ],
+          backgroundColor: UniversalVariables.blackColor,
+          onTap: navigationTapped,
+          currentIndex: _page,
         ),
       ),
     );
