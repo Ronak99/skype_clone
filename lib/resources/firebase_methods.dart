@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:skype_clone/constants/strings.dart';
 import 'package:skype_clone/models/message.dart';
@@ -105,9 +104,7 @@ class FirebaseMethods {
       ref.getDownloadURL().then((value) {
         url = value;
       });
-    }).catchError((onError) {
-      debugPrint(onError);
-    });
+    }).catchError((onError) {});
     return url;
   }
 
