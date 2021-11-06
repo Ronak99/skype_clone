@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skype_clone/utils/universal_variables.dart';
+import '../../utils/universal_variables.dart';
 
 class CustomTile extends StatelessWidget {
   final Widget leading;
@@ -9,7 +9,7 @@ class CustomTile extends StatelessWidget {
   final Widget? trailing;
   final EdgeInsets margin;
   final bool mini;
-  final GestureTapCallback? onTap;
+  final GestureTapCallback onTap;
   final GestureLongPressCallback? onLongPress;
 
   const CustomTile(
@@ -21,7 +21,7 @@ class CustomTile extends StatelessWidget {
       this.trailing,
       this.margin = const EdgeInsets.all(0),
       this.mini = false,
-      this.onTap,
+      required this.onTap,
       this.onLongPress})
       : super(key: key);
 

@@ -39,6 +39,7 @@ class Message {
     receiverId = map["receiverId"];
     type = map["type"];
     timestamp = map["timestamp"];
+    photoUrl = map["photoUrl"];
   }
 
   Map<String, dynamic> toImageMap() {

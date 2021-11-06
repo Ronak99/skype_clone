@@ -5,7 +5,7 @@ class UniversalVariables {
   static const Color blackColor = Color(0xff19191b);
   static const Color greyColor = Color(0xff8f8f8f);
   static const Color userCircleBlackGround = Color(0xff2b2b33);
-  static const Color onlinDotColor = Color(0xff46dc64);
+  static const Color onlineDotColor = Color(0xff46dc64);
   static const Color lightBlueColor = Color(0xff0077d7);
   static const Color separatorColor = Color(0xff272c35);
 

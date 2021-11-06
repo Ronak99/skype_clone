@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
-import 'package:skype_clone/Screens/chatscreens/chat_screen.dart';
-import 'package:skype_clone/models/person.dart';
-import 'package:skype_clone/resources/firebase_repository.dart';
-import 'package:skype_clone/utils/universal_variables.dart';
-import 'package:skype_clone/widgets/custom_tile.dart';
+
+import '../../Screens/chatscreens/chat_screen.dart';
+import '../../models/person.dart';
+import '../../resources/auth_methods.dart';
+import '../../utils/universal_variables.dart';
+import '../../widgets/custom_tile.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -15,8 +16,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final FirebaseRepository _repository = FirebaseRepository();
-
+  final AuthMethods _authMethods = AuthMethods();
   List<Person> userList = [];
 
   String query = "";
@@ -25,8 +25,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _repository.getCurrentUser().then((User user) {
-      _repository.fetchAllusers(user).then((List<Person> list) {
+    _authMethods.getCurrentUser().then((User user) {
+      _authMethods.fetchAllUsers(user).then((List<Person> list) {
         setState(() {
           userList = list;
         });
@@ -92,9 +92,9 @@ class _SearchScreenState extends State<SearchScreen> {
             String _getUsername = user.username!.toLowerCase();
             String _query = query.toLowerCase();
             String _getName = user.name!.toLowerCase();
-            bool matchesusername = _getUsername.contains(_query);
+            bool matchUserName = _getUsername.contains(_query);
             bool matchesName = _getName.contains(_query);
-            return (matchesusername || matchesName);
+            return (matchUserName || matchesName);
           }).toList();
     return ListView.builder(
       itemCount: suggestionList.length,

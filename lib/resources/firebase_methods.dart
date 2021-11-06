@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:skype_clone/constants/strings.dart';
-import 'package:skype_clone/models/message.dart';
 
+import '../constants/strings.dart';
+import '../models/message.dart';
 import '../models/person.dart';
+import '../provider/image_upload_provider.dart';
 import '../utils/utilities.dart';
 
 class FirebaseMethods {
@@ -18,6 +20,13 @@ class FirebaseMethods {
 
   Future<User> getCurrentUser() async {
     return _auth.currentUser!;
+  }
+
+  Future<Person> getUserDetails() async {
+    User user = await getCurrentUser();
+    DocumentSnapshot documentSnapshot =
+        await firestore.collection(usersCollection).doc(user.uid).get();
+    return Person.fromMap(documentSnapshot.data() as Map<String, dynamic>);
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -38,12 +47,12 @@ class FirebaseMethods {
         .get();
 
     final List<DocumentSnapshot> docs = result.docs;
-    // If user is registred then legth of list > 0 or else less than 0
+    // If user is registered then length of list > 0 or else less than 0
     return docs.isEmpty ? true : false;
   }
 
   Future<void> addDataToDb(UserCredential userCred) async {
-    String username = Utils.getUsername(userCred.user?.email);
+    String username = Utils.getUsername(userCred.user!.email!);
     Person user = Person(
         uid: userCred.user?.uid,
         name: userCred.user?.displayName,
@@ -65,13 +74,13 @@ class FirebaseMethods {
   Future<List<Person>> fetchAllUsers(User currentUser) async {
     List<Person> userList = [];
 
-    QuerySnapshot querysnapshot =
+    QuerySnapshot querySnapshot =
         await firestore.collection(usersCollection).get();
 
-    for (var i = 0; i < querysnapshot.docs.length; i++) {
-      if (querysnapshot.docs[i].id != currentUser.uid) {
+    for (var i = 0; i < querySnapshot.docs.length; i++) {
+      if (querySnapshot.docs[i].id != currentUser.uid) {
         userList.add(
-          Person.fromMap(querysnapshot.docs[i].data() as Map<String, dynamic>),
+          Person.fromMap(querySnapshot.docs[i].data() as Map<String, dynamic>),
         );
       }
     }
@@ -81,13 +90,11 @@ class FirebaseMethods {
 
   Future<void> addMessageToDb(Message message) async {
     var msg = message.toMap();
-
     await firestore
         .collection(messageCollection)
         .doc(message.senderId)
         .collection(message.receiverId.toString())
         .add(msg);
-
     await firestore
         .collection(messageCollection)
         .doc(message.receiverId)
@@ -98,19 +105,24 @@ class FirebaseMethods {
   Future<String> uploadImageToStorage(File image) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     String url = "";
-    Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+    Reference ref =
+        storage.ref().child(DateTime.now().millisecondsSinceEpoch.toString());
     UploadTask uploadTask = ref.putFile(image);
-    uploadTask.whenComplete(() {
+    await uploadTask.whenComplete(() {
       ref.getDownloadURL().then((value) {
         url = value;
       });
-    }).catchError((onError) {});
+    }).catchError((onError) {
+      debugPrint("Error in uploading image to storage: $onError");
+    });
     return url;
   }
 
-  void uploadImage(File image, String receiverId, String senderId) async {
+  void uploadImage(File image, String receiverId, String senderId,
+      ImageUploadProvider imageProvider) async {
+    imageProvider.setToLoading();
     String url = await uploadImageToStorage(image);
-
+    imageProvider.setToIdle();
     Message message = Message.imageMessage(
         senderId: senderId,
         receiverId: receiverId,
@@ -118,9 +130,7 @@ class FirebaseMethods {
         type: "IMAGE",
         timestamp: Timestamp.now(),
         photoUrl: url);
-
     var msg = message.toImageMap();
-
     await firestore
         .collection(messageCollection)
         .doc(message.senderId)

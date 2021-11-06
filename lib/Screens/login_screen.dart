@@ -2,35 +2,38 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../resources/firebase_repository.dart';
-import '../utils/universal_variables.dart';
+import '../../resources/auth_methods.dart';
+import '../../utils/universal_variables.dart';
 import 'home_screen.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseRepository _repository = FirebaseRepository();
+class LoginScreenState extends State<LoginScreen> {
+  final AuthMethods _authMethods = AuthMethods();
 
   bool isLoginPressed = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
-      body: SafeArea(
-          child: Stack(children: [
-        Center(
-          child: loginButton(),
-        ),
-        isLoginPressed
-            ? const Center(child: CircularProgressIndicator())
-            : Container(),
-      ])),
+      body: Stack(
+        children: [
+          Center(
+            child: loginButton(),
+          ),
+          isLoginPressed
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Container()
+        ],
+      ),
     );
   }
 
@@ -38,58 +41,47 @@ class _LoginScreenState extends State<LoginScreen> {
     return Shimmer.fromColors(
       baseColor: Colors.white,
       highlightColor: UniversalVariables.senderColor,
-      child: Padding(
-        padding: const EdgeInsets.all(35.0),
-        child: TextButton(
-          style: ButtonStyle(
-            shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          onPressed: performLogin,
-          child: const Text(
-            "LOGIN",
-            style: TextStyle(
-                fontSize: 35, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-          ),
+      child: TextButton(
+        child: const Text(
+          "LOGIN",
+          style: TextStyle(
+              fontSize: 35, fontWeight: FontWeight.w900, letterSpacing: 1.2),
         ),
+        onPressed: () => performLogin(),
       ),
     );
   }
 
-  void performLogin() {
+  void performLogin() async {
     setState(() {
       isLoginPressed = true;
     });
-    _repository.signIn().then((UserCredential userCredential) {
-      authenticateUser(userCredential);
+
+    UserCredential userCredential = await _authMethods.signIn();
+    authenticateUser(userCredential);
+    setState(() {
+      isLoginPressed = false;
     });
   }
 
   void authenticateUser(UserCredential userCredential) {
-    _repository.authenticateUser(userCredential).then((isNewUser) {
+    _authMethods.authenticateUser(userCredential).then((isNewUser) {
       setState(() {
         isLoginPressed = false;
       });
 
       if (isNewUser) {
-        _repository.addDataToDb(userCredential).then((value) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return const HomeScreen();
-            }),
-          );
+        _authMethods.addDataToDb(userCredential).then((value) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return const HomeScreen();
+          }));
         });
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) {
-            return const HomeScreen();
-          }),
-        );
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return const HomeScreen();
+        }));
       }
     });
   }
