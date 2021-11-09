@@ -50,7 +50,7 @@ class UserDetailsContainer extends StatelessWidget {
             centerTitle: true,
             title: const ShimmeringLogo(),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: () => signOut(),
                 child: const Text(
                   "Sign Out",
@@ -59,7 +59,7 @@ class UserDetailsContainer extends StatelessWidget {
               )
             ],
           ),
-          UserDetailsBody(),
+          const UserDetailsBody(),
         ],
       ),
     );
@@ -67,6 +67,8 @@ class UserDetailsContainer extends StatelessWidget {
 }
 
 class UserDetailsBody extends StatelessWidget {
+  const UserDetailsBody({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);

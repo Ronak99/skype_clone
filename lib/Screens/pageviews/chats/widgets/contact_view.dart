@@ -16,7 +16,7 @@ class ContactView extends StatelessWidget {
   final Contact contact;
   final AuthMethods _authMethods = AuthMethods();
 
-  ContactView(this.contact);
+  ContactView(this.contact, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

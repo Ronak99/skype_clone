@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 
@@ -8,7 +7,6 @@ import '../provider/image_upload_provider.dart';
 import '../resources/chat_methods.dart';
 
 class StorageMethods {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   Future<String> uploadImageToStorage(File image) async {
