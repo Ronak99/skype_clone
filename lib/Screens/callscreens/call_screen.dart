@@ -60,7 +60,7 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   addPostFrameCallback() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
       userProvider = Provider.of<UserProvider>(context, listen: false);
 
       callStreamSubscription = callMethods

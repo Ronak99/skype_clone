@@ -149,7 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
-            SchedulerBinding.instance.addPostFrameCallback((_) {
+            SchedulerBinding.instance!.addPostFrameCallback((_) {
               _listScrollController.animateTo(
                 _listScrollController.position.minScrollExtent,
                 duration: const Duration(milliseconds: 250),
